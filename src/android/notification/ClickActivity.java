@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -21,29 +21,28 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-package de.appplant.cordova.plugin.localnotification;
-
-import de.appplant.cordova.plugin.notification.AbstractRestoreReceiver;
-import de.appplant.cordova.plugin.notification.Builder;
-import de.appplant.cordova.plugin.notification.Notification;
+package de.appplant.cordova.plugin.notification;
 
 /**
- * This class is triggered upon reboot of the device. It needs to re-register
- * the alarms with the AlarmManager since these alarms are lost in case of
- * reboot.
+ * The receiver activity is triggered when a notification is clicked by a user.
+ * The activity calls the background callback and brings the launch intent
+ * up to foreground.
  */
-public class RestoreReceiver extends AbstractRestoreReceiver {
+public class ClickActivity extends AbstractClickActivity {
 
     /**
-     * Called when a local notification need to be restored.
+     * Called when local notification was clicked by the user. Will
+     * move the app to foreground.
      *
      * @param notification
      *      Wrapper around the local notification
      */
     @Override
-    public void onRestore (Notification notification) {
-        if (notification.isScheduled()) {
-            notification.schedule();
+    public void onClick(Notification notification) {
+        launchApp();
+
+        if (notification.isRepeating()) {
+            notification.clear();
         } else {
             notification.cancel();
         }
@@ -55,13 +54,8 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      * @param builder
      *      Notification builder
      */
-    @Override
     public Notification buildNotification (Builder builder) {
-        return builder
-                .setTriggerReceiver(TriggerReceiver.class)
-                .setClearReceiver(ClearReceiver.class)
-                .setClickActivity(ClickActivity.class)
-                .build();
+        return builder.build();
     }
 
 }

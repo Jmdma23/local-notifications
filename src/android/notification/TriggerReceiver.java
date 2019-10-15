@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2015 by appPlant UG. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -21,32 +21,28 @@
  * @APPPLANT_LICENSE_HEADER_END@
  */
 
-package de.appplant.cordova.plugin.localnotification;
-
-import de.appplant.cordova.plugin.notification.AbstractRestoreReceiver;
-import de.appplant.cordova.plugin.notification.Builder;
-import de.appplant.cordova.plugin.notification.Notification;
+package de.appplant.cordova.plugin.notification;
 
 /**
- * This class is triggered upon reboot of the device. It needs to re-register
- * the alarms with the AlarmManager since these alarms are lost in case of
- * reboot.
+ * The alarm receiver is triggered when a scheduled alarm is fired. This class
+ * reads the information in the intent and displays this information in the
+ * Android notification bar. The notification uses the default notification
+ * sound and it vibrates the phone.
  */
-public class RestoreReceiver extends AbstractRestoreReceiver {
+public class TriggerReceiver extends AbstractTriggerReceiver {
 
     /**
-     * Called when a local notification need to be restored.
+     * Called when a local notification was triggered. Does present the local
+     * notification and re-schedule the alarm if necessary.
      *
      * @param notification
      *      Wrapper around the local notification
+     * @param updated
+     *      If an update has triggered or the original
      */
     @Override
-    public void onRestore (Notification notification) {
-        if (notification.isScheduled()) {
-            notification.schedule();
-        } else {
-            notification.cancel();
-        }
+    public void onTrigger (Notification notification, boolean updated) {
+        notification.show();
     }
 
     /**
@@ -57,11 +53,7 @@ public class RestoreReceiver extends AbstractRestoreReceiver {
      */
     @Override
     public Notification buildNotification (Builder builder) {
-        return builder
-                .setTriggerReceiver(TriggerReceiver.class)
-                .setClearReceiver(ClearReceiver.class)
-                .setClickActivity(ClickActivity.class)
-                .build();
+        return builder.build();
     }
 
 }
